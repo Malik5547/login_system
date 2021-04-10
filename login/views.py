@@ -15,7 +15,7 @@ def index(request):
 def login(request):
     if request.POST:
         if is_login_valid(request):
-            set_login_session(request)
+            login_session_set(request)
             return render(request, 'login/success.html')
         else:
             return render(request, 'login/login.html', {'wrong_login': True})
@@ -23,12 +23,17 @@ def login(request):
         return render(request, 'login/login.html')
 
 
+def logout(request):
+    login_session_delete(request)
+    return login(request)
+
+
 def is_login_valid(request):
     username_req = request.POST['username']
     password_req = request.POST['password']
 
     try:
-        user = User.objects.filter(
+        user = User.objects.get(
             username=username_req,
             password=password_req,
         )
@@ -38,5 +43,9 @@ def is_login_valid(request):
     return True
 
 
-def set_login_session(request):
+def login_session_set(request):
     request.session['user'] = request.POST['username']
+
+
+def login_session_delete(request):
+    del(request.session['user'])
