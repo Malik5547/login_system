@@ -4,11 +4,10 @@ from .models import User
 
 
 def index(request):
-    user = request.session.get('user')
-    if user is None:
+    if is_logged(request):
         return login(request)
     else:
-        context = {'user': user}
+        context = {'user': logged_user(request)}
         return render(request, 'login/index.html', context)
 
 
@@ -26,6 +25,18 @@ def login(request):
 def logout(request):
     login_session_delete(request)
     return login(request)
+
+
+def is_logged(request):
+    user = request.session.get('user')
+    if user is None:
+        return False
+    else:
+        return  True
+
+
+def logged_user(request):
+    return request.POST['user']
 
 
 def is_login_valid(request):
