@@ -7,7 +7,7 @@ def index(request):
     if is_logged(request):
         return login(request)
     else:
-        context = {'user': logged_user(request)}
+        context = {'username': logged_user(request)}
         return render(request, 'login/index.html', context)
 
 
@@ -28,7 +28,7 @@ def logout(request):
 
 
 def is_logged(request):
-    user = request.session.get('user')
+    user = request.session.get('username')
     if user is None:
         return False
     else:
@@ -36,7 +36,7 @@ def is_logged(request):
 
 
 def logged_user(request):
-    return request.POST['user']
+    return request.POST['username']
 
 
 def is_login_valid(request):
@@ -55,8 +55,8 @@ def is_login_valid(request):
 
 
 def login_session_set(request):
-    request.session['user'] = request.POST['username']
+    request.session['username'] = request.POST['username']
 
 
 def login_session_delete(request):
-    del(request.session['user'])
+    del(request.session['username'])
