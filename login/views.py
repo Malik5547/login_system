@@ -5,21 +5,24 @@ from .models import User
 
 def index(request):
     if is_logged(request):
-        return login(request)
-    else:
         context = {'username': logged_user(request)}
         return render(request, 'login/index.html', context)
+    else:
+        return login(request)
 
 
 def login(request):
-    if request.POST:
-        if is_login_valid(request):
-            login_session_set(request)
-            return render(request, 'login/success.html')
+    if not is_logged(request):
+        if request.POST:
+            if is_login_valid(request):
+                login_session_set(request)
+                return render(request, 'login/success.html')
+            else:
+                return render(request, 'login/login.html', {'wrong_login': True})
         else:
-            return render(request, 'login/login.html', {'wrong_login': True})
+            return render(request, 'login/login.html')
     else:
-        return render(request, 'login/login.html')
+        return index(request)
 
 
 def logout(request):
@@ -32,11 +35,11 @@ def is_logged(request):
     if user is None:
         return False
     else:
-        return  True
+        return True
 
 
 def logged_user(request):
-    return request.POST['username']
+    return request.session.get('username')
 
 
 def is_login_valid(request):
