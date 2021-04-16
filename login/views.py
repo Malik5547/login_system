@@ -16,13 +16,31 @@ def login(request):
         if request.POST:
             if is_login_valid(request):
                 login_session_set(request)
-                return render(request, 'login/success.html')
+                return render(request, 'login/success.html', {'msg': 'You have successfully signed in.'})
             else:
                 return render(request, 'login/login.html', {'wrong_login': True})
         else:
             return render(request, 'login/login.html')
     else:
         return index(request)
+
+
+def register_page(request):
+    if not is_logged(request):
+        if request.POST:
+            reg_username = request.POST['username']
+            reg_password = request.POST['password']
+
+            if not is_registered(reg_username):
+                register_account(reg_username, reg_password)
+                return render(request, 'login/success.html', {'msg': 'You have successfully signed up.'
+                                                                     'Now you can login.'})
+            else:
+                return render(request, 'login/register.html', {'already_registered': True})
+        else:
+            return render(request, 'login/register.html')
+    else:
+        return render(request, 'login/index.html')
 
 
 def logout(request):
@@ -47,7 +65,7 @@ def is_login_valid(request):
     password_req = request.POST['password']
 
     try:
-        user = User.objects.get(
+        User.objects.get(
             username=username_req,
             password=password_req,
         )
@@ -63,3 +81,19 @@ def login_session_set(request):
 
 def login_session_delete(request):
     del(request.session['username'])
+
+
+def is_registered(reg_username):
+    try:
+        User.objects.get(
+            username=reg_username
+        )
+    except (KeyError, User.DoesNotExist):
+        return False
+
+    return True
+
+
+def register_account(reg_username, reg_password):
+    account = User(username=reg_username, password=reg_password)
+    account.save()
