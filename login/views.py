@@ -36,9 +36,9 @@ def register_page(request):
                 return render(request, 'login/success.html', {'msg': 'You have successfully signed up.'
                                                                      'Now you can login.'})
             else:
-                return render(request, 'login/register.html', {'already_registered': True})
+                return render(request, 'login/signup.html', {'already_registered': True})
         else:
-            return render(request, 'login/register.html')
+            return render(request, 'login/signup.html')
     else:
         return render(request, 'login/index.html')
 

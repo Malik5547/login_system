@@ -10,7 +10,7 @@
     <h2>Sorry, this username is already used.</h2>
     {% endif %}
 
-    <form action="{% url 'login:register' %}" method="post">
+    <form action="{% url 'login:signup' %}" method="post">
         {% csrf_token %}
 
         <label for="username">Username</label>
