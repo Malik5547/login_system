@@ -1,3 +1,5 @@
+import re
+
 from django.shortcuts import render
 
 from .models import User
@@ -25,18 +27,22 @@ def login(request):
         return index(request)
 
 
-def register_page(request):
+def signup(request):
     if not is_logged(request):
         if request.POST:
             reg_username = request.POST['username']
             reg_password = request.POST['password']
 
-            if not is_registered(reg_username):
+            if not is_username_valid(reg_username):
+                return render(request, 'login/signup.html', {'err_msg': 'Username is not valid.'})
+            elif not is_password_valid(reg_password):
+                return render(request, 'login/signup.html', {'err_msg': 'Password is not valid.'})
+            elif is_registered(reg_username):
+                return render(request, 'login/signup.html', {'err_msg': "This username is already used."})
+            else:
                 register_account(reg_username, reg_password)
                 return render(request, 'login/success.html', {'msg': 'You have successfully signed up.'
-                                                                     'Now you can login.'})
-            else:
-                return render(request, 'login/signup.html', {'already_registered': True})
+                                                                         'Now you can login.'})
         else:
             return render(request, 'login/signup.html')
     else:
@@ -81,6 +87,18 @@ def login_session_set(request):
 
 def login_session_delete(request):
     del(request.session['username'])
+
+
+def is_username_valid(reg_username):
+    if re.search('^(?=.{4,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$', reg_username):
+        return True
+    return False
+
+
+def is_password_valid(reg_password):
+    if re.search('^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{4,}$', reg_password):
+        return True
+    return False
 
 
 def is_registered(reg_username):
