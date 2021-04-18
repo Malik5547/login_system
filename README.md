@@ -1,6 +1,3 @@
 # login_system
-This is a simple login system for webpage on Django.
+This is a simple login system on Django with the signup page.
 
-Structure:
-Login : main app;
-LoginPage : main project
